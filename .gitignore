@@ -1,0 +1,57 @@
+# ===== IDE =====
+.idea/
+.vscode/
+*.iml
+*.ipr
+*.iws
+.settings/
+.project
+.classpath
+.metadata/
+
+# ===== OS =====
+.DS_Store
+Thumbs.db
+
+# ===== 빌드/산출물 =====
+build/
+dist/
+out/
+*.class
+*.jar
+*.war
+
+# ===== Gradle =====
+.gradle/
+!gradle-wrapper.jar
+gradle-wrapper.properties
+
+# ===== Maven =====
+target/
+.mvn/
+
+# ===== 로컬 설정/환경 =====
+*.local.yml
+*.local.properties
+*.local.conf
+application-secret.yml
+application-secrets.yml
+.env
+.env.*
+
+# ===== 테스트/리포트 =====
+*.html
+!**/src/main/resources/templates/**/*.html
+!**/src/main/resources/static/**/*.html
+
+# ===== Docker =====
+.docker/
+
+# ===== 로그 =====
+*.log
+logs/
+
+# ===== 임시/캐시 =====
+*.tmp
+*.temp
+.cache/
