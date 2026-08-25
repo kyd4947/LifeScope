@@ -39,6 +39,9 @@ application-secrets.yml
 .env
 .env.*
 
+# ===== Oracle Cloud ======
+ssh-key-2026-08-25.key
+
 # ===== 테스트/리포트 =====
 *.html
 !**/src/main/resources/templates/**/*.html
