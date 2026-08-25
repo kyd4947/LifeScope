@@ -29,6 +29,8 @@
 | 차트 | Chart.js / ApexCharts |
 | 배포 | GitHub Pages (`gh-pages` 브랜치) |
 
+#### [📃기술 스택 선정 이유](docs/tech_stack_rationale.md)
+
 ### 📊 데이터 소스
 | 데이터 | 제공 기관 | API | 갱신 주기 | 지역 단위 |
 |---|---|---|---|---|
