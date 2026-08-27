@@ -9,7 +9,7 @@
 | 분류 | 기술 |
 |---|---|
 | Language | Java 21 LTS |
-| Framework | Spring Boot 3.3.x |
+| Framework | Spring Boot 4.4.1 |
 | Build | Gradle 8.x (Kotlin DSL) |
 | DB | PostgreSQL (Flyway 마이그레이션) |
 | Cache | Redis (Lettuce) |
