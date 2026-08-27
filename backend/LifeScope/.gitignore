@@ -1,37 +1,71 @@
-HELP.md
-.gradle
-build/
-!gradle/wrapper/gradle-wrapper.jar
-!**/src/main/**/build/
-!**/src/test/**/build/
-
-### STS ###
-.apt_generated
-.classpath
-.factorypath
+# ===== IDE (STS / Eclipse / IntelliJ / VS Code) =====
+.idea/
+.vscode/
+*.iml
+*.ipr
+*.iws
+.settings/
 .project
-.settings
+.classpath
+.metadata/
+.apt_generated
+.factorypath
 .springBeans
 .sts4-cache
 bin/
 !**/src/main/**/bin/
 !**/src/test/**/bin/
 
-### IntelliJ IDEA ###
-.idea
-*.iws
-*.iml
-*.ipr
+# ===== OS =====
+.DS_Store
+Thumbs.db
+
+# ===== 빌드 / 산출물 (Gradle / Maven) =====
+build/
+dist/
 out/
+target/
+.gradle/
+!gradle/wrapper/gradle-wrapper.jar
+gradle-wrapper.properties
+.mvn/
+*.class
+*.jar
+*.war
+!**/src/main/**/build/
+!**/src/test/**/build/
 !**/src/main/**/out/
 !**/src/test/**/out/
 
-### NetBeans ###
+# ===== NetBeans (참조용 정리) =====
 /nbproject/private/
 /nbbuild/
-/dist/
 /nbdist/
 /.nb-gradle/
 
-### VS Code ###
-.vscode/
+# ===== 로컬 설정 / 환경 변수 / 보안 키 =====
+*.local.yml
+*.local.properties
+*.local.conf
+application-secret.yml
+application-secrets.yml
+.env
+.env.*
+ssh-key-2026-08-25.key
+
+# ===== 테스트 / 리포트 =====
+*.html
+!**/src/main/resources/templates/**/*.html
+!**/src/main/resources/static/**/*.html
+
+# ===== Docker =====
+.docker/
+
+# ===== 로그 =====
+*.log
+logs/
+
+# ===== 임시 / 캐시 =====
+*.tmp
+*.temp
+.cache/
