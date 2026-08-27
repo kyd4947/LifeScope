@@ -9,7 +9,7 @@
 | 선정 이유 | 비고 |
 |---|---|
 | **LTS 버전** | 2026년 9월까지 프리미어 지원, 2031년까지 연장 지원 |
-| **가상 스레드 (Virtual Threads)** | Spring Boot 3.2+에서 네이티브 지원. 고동시성 API 서버에 최적 (요청당 스레드 1:1 매핑 가능) |
+| **가상 스레드 (Virtual Threads)** | Spring Boot 4.1+에서 네이티브 지원. 고동시성 API 서버에 최적 (요청당 스레드 1:1 매핑 가능) |
 | **패턴 매칭, Record, Sealed Classes** | 도메인 모델링(Domain Modeling) 가독성/안전성 향상 |
 | **성능 향상** | JIT 컴파일러, GC(ZGC/Generational ZGC) 개선으로 지연시간 감소 |
 
@@ -17,7 +17,7 @@
 
 ---
 
-### Spring Boot 3.3.x
+### Spring Boot 4.1.x
 | 선정 이유 | 비고 |
 |---|---|
 | **Java 17+ 베이스라인** | Java 21 기능 완전 활용 가능 (가상 스레드, 패턴 매칭 등) |
