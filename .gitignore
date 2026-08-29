@@ -1,4 +1,4 @@
-# ===== IDE =====
+# ===== IDE (STS / Eclipse / IntelliJ / VS Code) =====
 .idea/
 .vscode/
 *.iml
@@ -8,41 +8,53 @@
 .project
 .classpath
 .metadata/
+.apt_generated
+.factorypath
+.springBeans
+.sts4-cache
+bin/
+!**/src/main/**/bin/
+!**/src/test/**/bin/
 
 # ===== OS =====
 .DS_Store
 Thumbs.db
 
-# ===== 빌드/산출물 =====
+# ===== 빌드 / 산출물 (Gradle / Maven) =====
 build/
 dist/
 out/
+target/
+.gradle/
+!gradle/wrapper/gradle-wrapper.jar
+gradle-wrapper.properties
+.mvn/
 *.class
 *.jar
 *.war
+!**/src/main/**/build/
+!**/src/test/**/build/
+!**/src/main/**/out/
+!**/src/test/**/out/
 
-# ===== Gradle =====
-.gradle/
-!gradle-wrapper.jar
-gradle-wrapper.properties
+# ===== NetBeans (참조용 정리) =====
+/nbproject/private/
+/nbbuild/
+/nbdist/
+/.nb-gradle/
 
-# ===== Maven =====
-target/
-.mvn/
-
-# ===== 로컬 설정/환경 =====
+# ===== 로컬 설정 / 환경 변수 / 보안 키 =====
+*.yml
 *.local.yml
-*.local.properties
+*.properties
 *.local.conf
 application-secret.yml
 application-secrets.yml
 .env
 .env.*
-
-# ===== Oracle Cloud ======
 ssh-key-2026-08-25.key
 
-# ===== 테스트/리포트 =====
+# ===== 테스트 / 리포트 =====
 *.html
 !**/src/main/resources/templates/**/*.html
 !**/src/main/resources/static/**/*.html
@@ -54,7 +66,7 @@ ssh-key-2026-08-25.key
 *.log
 logs/
 
-# ===== 임시/캐시 =====
+# ===== 임시 / 캐시 =====
 *.tmp
 *.temp
 .cache/

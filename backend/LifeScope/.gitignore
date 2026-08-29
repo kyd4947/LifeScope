@@ -46,7 +46,7 @@ gradle-wrapper.properties
 # ===== 로컬 설정 / 환경 변수 / 보안 키 =====
 *.yml
 *.local.yml
-*.local.properties
+*.properties
 *.local.conf
 application-secret.yml
 application-secrets.yml
