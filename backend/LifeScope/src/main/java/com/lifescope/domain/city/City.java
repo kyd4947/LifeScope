@@ -3,6 +3,9 @@ package com.lifescope.domain.city;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.lifescope.domain.costOfLiving.ConsumerPriceIndex;
+import com.lifescope.domain.wage.AverageWage;
+
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
