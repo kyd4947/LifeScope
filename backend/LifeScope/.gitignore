@@ -44,6 +44,7 @@ gradle-wrapper.properties
 /.nb-gradle/
 
 # ===== 로컬 설정 / 환경 변수 / 보안 키 =====
+*.yml
 *.local.yml
 *.local.properties
 *.local.conf
