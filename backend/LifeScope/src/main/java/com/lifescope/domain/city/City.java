@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.lifescope.domain.costOfLiving.ConsumerPriceIndex;
+import com.lifescope.domain.housing.HousingPrice;
 import com.lifescope.domain.wage.AverageWage;
 
 import jakarta.persistence.CascadeType;
