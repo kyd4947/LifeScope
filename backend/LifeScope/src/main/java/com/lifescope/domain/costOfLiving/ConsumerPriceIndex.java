@@ -1,6 +1,7 @@
 package com.lifescope.domain.costOfLiving;
 
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.time.LocalDateTime;
 import java.util.Objects;
 
@@ -69,7 +70,7 @@ public class ConsumerPriceIndex {
 		}
 		return BigDecimal.valueOf(salary)
 				.multiply(targetCPI)
-				.divide(this.cpiValue, 2, BigDecimal.ROUND_HALF_UP);
+				.divide(this.cpiValue, 2, RoundingMode.HALF_UP);
 	}
 	
 	@Override
