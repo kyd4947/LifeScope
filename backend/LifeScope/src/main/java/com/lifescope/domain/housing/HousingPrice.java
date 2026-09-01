@@ -42,12 +42,12 @@ public class HousingPrice {
 	@JoinColumn(name="city_code", nullable=false)
 	private City city;
 	
-	// 거래 유형 : M=매매, J=전세, W=월세
-	@Column(length=1, nullable=false)
+	// 거래 유형 : M=매매, J=전세, W=월세 - DB 스키마의 CHAR(1) 타입과 일치
+	@Column(length=1, columnDefinition="CHAR(1)", nullable=false)
 	private String tradeType;
 	
-	// 연월
-	@Column(length=6, nullable=false)
+	// 연월 (예: 202412) - DB 스키마의 CHAR(6) 타입과 일치
+	@Column(length=6, columnDefinition="CHAR(6)", nullable=false)
 	private String yearMonth;
 	
 	// 평균가 (단위 : 만원)

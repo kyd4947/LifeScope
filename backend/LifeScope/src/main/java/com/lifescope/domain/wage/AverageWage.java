@@ -49,8 +49,8 @@ public class AverageWage {
 	@Column(nullable=false)
 	private Long wageAvg;
 	
-	// 월평균 임금
-	@Column(nullable=false)
+	// 월평균 임금 - DB에서 GENERATED ALWAYS로 자동 계산되는 컬럼 (INSERT/UPDATE 시 값 지정 불가)
+	@Column(nullable=false, insertable=false, updatable=false)
 	private Long wageMonthly;
 	
 	// 생성 시각
