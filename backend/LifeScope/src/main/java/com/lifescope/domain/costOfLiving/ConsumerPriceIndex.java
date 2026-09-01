@@ -25,7 +25,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 @Entity
-@Table(name = "consumer_priec_index", 
+@Table(name = "consumer_price_index", 
 uniqueConstraints = @UniqueConstraint(columnNames = {"city_code", "base_year", "year_month"}))
 @Getter
 @Setter

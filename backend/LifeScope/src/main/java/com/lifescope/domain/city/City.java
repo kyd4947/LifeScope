@@ -46,7 +46,7 @@ public class City {
 	
 	@Builder.Default
 	@Column(nullable=false)
-	private Boolean isActivce = true;
+	private Boolean isActive = true;
 	
 	@OneToMany(mappedBy="city", cascade=CascadeType.ALL, orphanRemoval=true)
 	@Builder.Default
