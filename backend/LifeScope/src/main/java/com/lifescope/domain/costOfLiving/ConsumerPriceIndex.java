@@ -47,8 +47,8 @@ public class ConsumerPriceIndex {
 	@Column(nullable=false)
 	private Short baseYear;
 	
-	// 연월 (예: 202412) - DB 스키마의 CHAR(6) 타입과 일치
-	@Column(length=6, columnDefinition="CHAR(6)", nullable=false)
+	// 연월 (예: 202412) - V3 마이그레이션으로 VARCHAR(6) 변경됨
+	@Column(length=6, nullable=false)
 	private String yearMonth;
 	
 	// 물가지수 값
