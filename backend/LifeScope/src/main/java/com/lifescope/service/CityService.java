@@ -8,6 +8,7 @@ import org.springframework.transaction.annotation.Transactional;
 import com.lifescope.domain.city.City;
 import com.lifescope.domain.city.CityRepository;
 import com.lifescope.dto.CityResponse;
+import com.lifescope.exception.DataNotFoundException;
 
 import lombok.RequiredArgsConstructor;
 
@@ -47,12 +48,12 @@ public class CityService {
 	public CityResponse getActiveCity(String code) {
 		return cityRepository.findByCodeAndIsActiveTrue(code)
 				.map(CityResponse::from)
-				.orElseThrow(() -> new IllegalArgumentException("존재하지 않는 지역 코드 : " + code));
+				.orElseThrow(() -> new DataNotFoundException("존재하지 않는 지역 코드 : " + code));
 	}
 	
 	// 지역 엔티티 조회 - ComparisonService 등 내부 서비스 간 검증용
 	public City getCityEntity(String code) {
 		return cityRepository.findByCodeAndIsActiveTrue(code)
-				.orElseThrow(() -> new IllegalArgumentException("존재하지 않는 지역 코드 : " + code));
+				.orElseThrow(() -> new DataNotFoundException("존재하지 않는 지역 코드 : " + code));
 	}
 }
