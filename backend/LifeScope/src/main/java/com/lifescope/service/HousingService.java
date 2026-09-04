@@ -9,6 +9,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.lifescope.domain.housing.HousingRepository;
 import com.lifescope.dto.HousingPriceResponse;
+import com.lifescope.exception.InvalidTradeTypeException;
 
 import lombok.RequiredArgsConstructor;
 
@@ -44,7 +45,7 @@ public class HousingService {
 	// 거래 유형 검증 (M/J/W 외 값 차단)
 	private void validateTradeType(String tradeType) {
 		if(!VALID_TRADE_TYPES.contains(tradeType)) {
-			throw new IllegalArgumentException("유효하지 않은 거래 유형 : " + tradeType + " (M = 매매, J = 전세, W = 월세)");
+			throw new InvalidTradeTypeException("유효하지 않은 거래 유형 : " + tradeType + " (M = 매매, J = 전세, W = 월세)");
 		}
 	}
 }
