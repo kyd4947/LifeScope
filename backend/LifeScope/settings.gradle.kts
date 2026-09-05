@@ -1,1 +1,1 @@
-rootProject.name = "lifescope-backend"
+rootProject.name = "LifeScope"
