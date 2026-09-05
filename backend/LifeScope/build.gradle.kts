@@ -37,8 +37,6 @@ dependencies {
 	testCompileOnly("org.projectlombok:lombok")
 	testRuntimeOnly("org.junit.platform:junit-platform-launcher")
 	testAnnotationProcessor("org.projectlombok:lombok")
-	// Source: https://mvnrepository.com/artifact/io.swagger.core.v3/swagger-annotations
-	implementation("io.swagger.core.v3:swagger-annotations:2.2.54")
 }
 
 tasks.withType<Test> {
