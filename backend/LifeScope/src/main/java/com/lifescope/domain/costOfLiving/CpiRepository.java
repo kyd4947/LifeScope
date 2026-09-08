@@ -29,4 +29,7 @@ public interface CpiRepository extends JpaRepository<ConsumerPriceIndex, Long>{
 	// 특정 도시 최근 CPI 평균값 조회
 	@Query("SELECT AVG(c.cpiValue) FROM ConsumerPriceIndex c WHERE c.city.code = :cityCode AND c.yearMonth >= :since")
 	Optional<BigDecimal> findAverageCpiSince(@Param("cityCode") String cityCode, @Param("since") String since);
+	
+	// upsert 용 : 특정 도시·기준 년도 · 연/월 CPI 조회
+	Optional<ConsumerPriceIndex> findByCityCodeAndBaseYearAndYearMonth(String cityCode, Short baseYear, String yearMonth);
 }
