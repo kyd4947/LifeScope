@@ -6,9 +6,9 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestClient;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.core.type.TypeReference;
-import com.fasterxml.jackson.databind.ObjectMapper;
+import tools.jackson.core.JacksonException;
+import tools.jackson.core.type.TypeReference;
+import tools.jackson.databind.json.JsonMapper;
 import com.lifescope.client.dto.CpiApiItem;
 
 // KOSIS OpenAPI 호출 클라이언트 - Spring RestClient 사용, apiKey는 환경변수 KOSIS_API_KEY 에서 주입
@@ -20,12 +20,12 @@ public class KosisClient {
 	private final String orgId;
 	private final String tblId;
 	private final String itmId;
-	private final ObjectMapper objectMapper;
+	private final JsonMapper jsonMapper;
 	
 	// 생성자 주입
 	public KosisClient(
 			RestClient.Builder builder,
-			ObjectMapper objectMapper,
+			JsonMapper jsonMapper,
 			@Value("${kosis.base-url:https://kosis.kr/openapi/Param/statisticsParameterData.do}") String baseUrl,
 			@Value("${kosis.api-key:}") String apiKey,
 			@Value("${kosis.cpi-org-id:101}") String orgId,
@@ -40,7 +40,7 @@ public class KosisClient {
 		this.orgId = orgId;
 		this.tblId = tblId;
 		this.itmId = itmId;
-		this.objectMapper = objectMapper;
+		this.jsonMapper = jsonMapper;
 	}
 	
 	// 최신(월) CPI 전 지역 조회 (전국 포함 18건 예상)
@@ -66,9 +66,9 @@ public class KosisClient {
 				.retrieve()
 				.body(String.class);
 		try {
-			List<CpiApiItem> result = objectMapper.readValue(rawBody, new TypeReference<List<CpiApiItem>>() {});
+			List<CpiApiItem> result = jsonMapper.readValue(rawBody, new TypeReference<List<CpiApiItem>>() {});
 			return result != null ? result : List.of();			
-		} catch (JsonProcessingException e) {
+		} catch (JacksonException e) {
 			String preview = rawBody.length() > 200 ? rawBody.substring(0, 200) : rawBody;
 			throw new IllegalStateException("KOSIS 응답 파싱 실패. 응답 앞부분 : " + preview, e);
 		}
