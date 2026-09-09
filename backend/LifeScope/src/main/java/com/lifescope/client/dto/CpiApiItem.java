@@ -19,7 +19,7 @@ public class CpiApiItem {
 	private String value;
 	
 	// 수록 시점 - year_month에 그대로 사용
-	@JsonProperty("PRE_DE")
+	@JsonProperty("PRD_DE")
 	private String period;
 	
 	// 지역 한글 명 - 코드 변환 키
