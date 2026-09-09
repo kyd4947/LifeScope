@@ -22,9 +22,9 @@ public class KosisClient {
 	// 생성자 주입
 	public KosisClient(
 			RestClient.Builder builder,
-			@Value("${kosis.base-url:https://kosis.kr/openapi/Param/statisticsParameterData.do") String baseUrl,
+			@Value("${kosis.base-url:https://kosis.kr/openapi/Param/statisticsParameterData.do}") String baseUrl,
 			@Value("${kosis.api-key:}") String apiKey,
-			@Value("${kosis.cpi-org-id:101") String orgId,
+			@Value("${kosis.cpi-org-id:101}") String orgId,
 			@Value("${kosis.cpi-tbl-id:INH_1J22003}") String tblId,
 			@Value("${kosis.cpi-itm-id:T}") String itmId) {
 		this.restClient = builder.baseUrl(baseUrl).build();
@@ -50,7 +50,7 @@ public class KosisClient {
 						.queryParam("itmId", itmId)
 						.queryParam("format", "json")
 						.queryParam("jsonVD", "Y")
-						.queryParam("prdSE", "M")
+						.queryParam("prdSe", "M")
 						.queryParam("newEstPrdCnt", 1)
 						.queryParam("outputFields", "ORG_ID TBL_ID NM NM_ENG ITM_NM UNIT_NM PRD_DE ")
 						.build())
