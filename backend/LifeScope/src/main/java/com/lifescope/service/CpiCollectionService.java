@@ -69,7 +69,20 @@ public class CpiCollectionService {
 			// 4. 값 변환 (기준 년도 추출 + 수치 파싱)
 			Short baseYear = parseBaseYear(item.getUnit());
 			String yearMonth = item.getPeriod();
-			BigDecimal value = new BigDecimal(item.getValue().trim());
+			BigDecimal value;
+			try {
+				String raw = item.getValue() == null ? "" : item.getValue().trim();
+				if(raw.isEmpty() || "-".equals(raw) || "N/A".equalsIgnoreCase(raw)) {
+					log.warn("CPI 값 없음, 스킵 : region = {} period = {} value = {}", item.getRegionName(), item.getPeriod(), item.getValue());
+					skipped++;
+					continue;
+				}
+				value = new BigDecimal(raw);
+			} catch(NumberFormatException e) {
+				log.warn("CPI 숫자 파싱 실패, 스킵 : value = {}", item.getValue());
+				skipped++;
+				continue;
+			}
 			
 			// 5. upsert
 			Optional<ConsumerPriceIndex> existing =
