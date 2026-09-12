@@ -22,7 +22,7 @@ public class CpiCollectionRunner implements ApplicationRunner {
 	@Override
 	public void run(ApplicationArguments args) throws Exception {
 		log.info("KOSIS CPI 수집 시작");
-		int count = collectionService.collecLatestCpi();
+		int count = collectionService.collectLatestCpi();
 		log.info("KOSIS CPI 수집 완료 : {} 건 저장/갱신", count);
 	}
 }
