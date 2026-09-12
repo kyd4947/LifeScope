@@ -27,6 +27,9 @@ dependencies {
 	implementation("org.flywaydb:flyway-database-postgresql")
 	implementation("org.springdoc:springdoc-openapi-starter-webmvc-ui:3.1.0")
 	implementation("org.springframework.boot:spring-boot-starter-jackson")
+	// 외부 공공 API 내성 - Boot 4 호환 위해 스타터 대신 코어 모듈 + 프로그래매틱 사용
+	implementation("io.github.resilience4j:resilience4j-circuitbreaker:2.3.0")
+	implementation("io.github.resilience4j:resilience4j-retry:2.3.0")
 	compileOnly("org.projectlombok:lombok")
 	developmentOnly("org.springframework.boot:spring-boot-devtools")
 	runtimeOnly("org.postgresql:postgresql")
