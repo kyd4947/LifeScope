@@ -33,14 +33,14 @@ public class CityController {
 	
 	// 지역 코드 단건 조회
 	@Operation(summary="지역 단건 조회", description="코드로 활성 지역 1개 조회")
-	@GetMapping("/{code}")
+	@GetMapping("/{code:[0-9]+}")
 	public ResponseEntity<CityResponse> getCity(@Parameter(description="지역코드") @PathVariable String code){
 		return ResponseEntity.ok(cityService.getActiveCity(code));
 	}
 	
 	// 특정 시/도 하위 시/군/구 목록
 	@Operation(summary="시/군/구 목록 조회", description="특정 시/도에 속한 시/군/구 목록 반환")
-	@GetMapping("/{code}/towns")
+	@GetMapping("/{code:[0-9]+}/towns")
 	public ResponseEntity<List<CityResponse>> getTowns(@Parameter(description="상위 시/도 코드") @PathVariable String code){
 		return ResponseEntity.ok(cityService.getTownByParent(code));
 	}
