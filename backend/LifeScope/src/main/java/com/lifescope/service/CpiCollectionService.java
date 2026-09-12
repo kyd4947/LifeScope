@@ -35,7 +35,7 @@ public class CpiCollectionService {
 	
 	// 최신(월) CPI 수집 1회 실행, 저장 + 갱신 건수 변환
 	@Transactional
-	public int collecLatestCpi() {
+	public int collectLatestCpi() {
 		List<CpiApiItem> items = kosisClient.fetchLatestCpi();
 		
 		int saved = 0;
