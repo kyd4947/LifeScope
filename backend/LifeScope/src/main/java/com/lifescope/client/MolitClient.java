@@ -100,7 +100,7 @@ public class MolitClient {
 		String url = baseUrl + "/" + operation
 				+ "?serviceKey=" + serviceKey
 				+ "&LAWD_CD=" + lawdCode
-				+ "&DEAL_YMD" + dealYmd
+				+ "&DEAL_YMD=" + dealYmd
 				+ "&pageNo=" + pageNo
 				+ "&numOfRows=" + numOfRows
 				+ "&_type=json";
