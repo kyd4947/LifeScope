@@ -31,4 +31,7 @@ public interface HousingRepository extends JpaRepository<HousingPrice, Long>{
 	// 특정 도시 매매 평균가 목록 (최신순)
 	@Query("SELECT h FROM HousingPrice h WHERE h.city.code = :cityCode AND h.tradeType = 'M' ORDER BY h.yearMonth DESC")
 	List<HousingPrice> findMaptPricesByCityCode(@Param("cityCode") String cityCode);
+	
+	// upsert 용 : 도시·거래유형·연월 정확히 일치하는 1건 조회
+	HousingPrice findByCityCodeAndTradeTypeAndYearMonth(String cityCode, String tradeType, String yearMonth);
 }
