@@ -10,6 +10,7 @@ import com.fasterxml.jackson.core.JacksonException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.json.JsonMapper;
 import com.lifescope.client.dto.CpiApiItem;
+import com.lifescope.client.dto.WageApiItem;
 
 // KOSIS OpenAPI 호출 클라이언트 - Spring RestClient 사용, apiKey는 환경변수 KOSIS_API_KEY 에서 주입
 @Component
@@ -74,4 +75,37 @@ public class KosisClient {
 		}
 	}
 	
+	// 최신(연) 임금 전 지역 조회 - 통계표 ID는 application.yaml 의 kosis.wage-* 주입
+	public List<WageApiItem> fetchLatestWage(String orgId, String tblId, String itmId){
+		if(apiKey == null || apiKey.isBlank()) {
+			throw new IllegalStateException("KOSIS_API_KEY 환경변수가 설정되지 않았습니다.");
+		}
+		if(orgId == null || orgId.isBlank() || tblId == null || tblId.isBlank()) {
+			throw new IllegalStateException("임금 통계표 ID(kosis.wage-org-id / kosis.wage-tbl-id)가 설정되지 않았습니다.");
+		}
+
+		String rawBody = restClient.get()
+				.uri(uriBuilder -> uriBuilder
+						.queryParam("method", "getList")
+						.queryParam("apiKey", apiKey)
+						.queryParam("orgId", orgId)
+						.queryParam("tblId", tblId)
+						.queryParam("objL1", "ALL")
+						.queryParam("itmId", itmId != null ? itmId : "ALL")
+						.queryParam("format", "json")
+						.queryParam("jsonVD", "Y")
+						.queryParam("prdSe", "Y")
+						.queryParam("newEstPrdCnt", 1)
+						.queryParam("outputFields", "ORG_ID TBL_ID NM NM_ENG ITM_NM UNIT_NM PRD_DE ")
+						.build())
+				.retrieve()
+				.body(String.class);
+		try {
+			List<WageApiItem> result = jsonMapper.readValue(rawBody, new TypeReference<List<WageApiItem>>() {});
+			return result != null ? result : List.of();
+		} catch (JacksonException e) {
+			String preview = rawBody.length() > 200 ? rawBody.substring(0, 200) : rawBody;
+			throw new IllegalStateException("KOSIS 임금 응답 파싱 실패. 응답 앞부분 : " + preview, e);
+		}
+	}
 }
