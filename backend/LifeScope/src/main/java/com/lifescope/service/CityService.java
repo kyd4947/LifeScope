@@ -2,6 +2,7 @@ package com.lifescope.service;
 
 import java.util.List;
 
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -19,8 +20,9 @@ import lombok.RequiredArgsConstructor;
 public class CityService {
 
 	private final CityRepository cityRepository;
-	
+
 	// 전체 시/도 (level=1) 목록 조회
+	@Cacheable("cities")
 	public List<CityResponse> getAllCity(){
 		return cityRepository.findByLevelAndIsActiveTrue((short) 1)
 				.stream()
@@ -29,6 +31,7 @@ public class CityService {
 	}
 	
 	// 특정 시/도에 속한 시/군/구 (level=2) 목록 조회
+	@Cacheable(value = "towns", key = "#parentCode")
 	public List<CityResponse> getTownByParent(String parentCode){
 		return cityRepository.findByParentCodeAndIsActiveTrue(parentCode)
 				.stream()
@@ -37,6 +40,7 @@ public class CityService {
 	}
 	
 	// 지역명 키워드 검색
+	@Cacheable(value = "city", key = "#code")
 	public List<CityResponse> searchByName(String keyword){
 		return cityRepository.findByNameContainingAndIsActiveTrue(keyword)
 				.stream()
