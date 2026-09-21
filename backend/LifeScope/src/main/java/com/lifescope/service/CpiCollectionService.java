@@ -6,6 +6,7 @@ import java.util.Optional;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -35,6 +36,7 @@ public class CpiCollectionService {
 	
 	// 최신(월) CPI 수집 1회 실행, 저장 + 갱신 건수 변환
 	@Transactional
+	@CacheEvict(value = {"cpiLatest", "cpiHistory", "comparison"}, allEntries = true)
 	public int collectLatestCpi() {
 		List<CpiApiItem> items = kosisClient.fetchLatestCpi();
 		
