@@ -3,6 +3,7 @@ package com.lifescope.service;
 import java.util.List;
 import java.util.Optional;
 
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -20,18 +21,21 @@ public class WageService {
 	private final WageRepository wageRepository;
 	
 	// 특정 도시의 최신 임금 조회
+	@Cacheable(value = "wageLatest", key = "#cityCode")
 	public Optional<WageResponse> getLatestWage(String cityCode){
 		return wageRepository.findTopByCityCodeOrderByYearDesc(cityCode)
 				.map(WageResponse::from);
 	}
 	
 	// 특정 도시의 특정 연도 임금 조회
+	@Cacheable(value = "wageByYear", key = "#cityCode + ':' + #year")
 	public Optional<WageResponse> getWageByYear(String cityCode, Short year){
 		return wageRepository.findByCityCodeAndYear(cityCode, year)
 				.map(WageResponse::from);
 	}
 	
 	// 특정 연도 전체 도시 임금 순위 (전국 비교용)
+	@Cacheable(value = "wageRanking", key = "#year")
 	public List<WageResponse> getWagesByYear(Short year){
 		return wageRepository.findAllByYearOrderByWageAvgDesc(year)
 				.stream()
