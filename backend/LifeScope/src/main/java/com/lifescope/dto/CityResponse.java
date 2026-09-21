@@ -1,12 +1,12 @@
 package com.lifescope.dto;
 
+import java.io.Serializable;
+
 import com.lifescope.domain.city.City;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
-
-import java.io.Serializable;
 
 // 지역 조회 응답 DTO : 엔티티의 연관 컬렉션 (cpiList 등)은 제외해 응답 경량화
 @Getter

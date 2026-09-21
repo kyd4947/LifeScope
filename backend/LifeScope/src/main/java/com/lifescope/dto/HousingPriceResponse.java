@@ -1,12 +1,12 @@
 package com.lifescope.dto;
 
+import java.io.Serializable;
+
 import com.lifescope.domain.housing.HousingPrice;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
-
-import java.io.Serializable;
 
 // 주거비 실거래가 응답 DTO
 @Getter

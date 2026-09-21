@@ -1,12 +1,12 @@
 package com.lifescope.dto;
 
+import java.io.Serializable;
+
 import com.lifescope.domain.wage.AverageWage;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
-
-import java.io.Serializable;
 
 // 평균 임금 응답 DTO
 @Getter
