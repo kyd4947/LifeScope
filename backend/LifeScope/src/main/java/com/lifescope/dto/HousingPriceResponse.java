@@ -6,11 +6,13 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 
+import java.io.Serializable;
+
 // 주거비 실거래가 응답 DTO
 @Getter
 @Builder
 @AllArgsConstructor
-public class HousingPriceResponse {
+public class HousingPriceResponse implements Serializable {
 
 	// 지역 코드
 	private final String cityCode;

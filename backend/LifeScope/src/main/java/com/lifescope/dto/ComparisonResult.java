@@ -1,5 +1,6 @@
 package com.lifescope.dto;
 
+import java.io.Serializable;
 import java.math.BigDecimal;
 
 import lombok.AllArgsConstructor;
@@ -10,7 +11,7 @@ import lombok.Getter;
 @Getter
 @Builder
 @AllArgsConstructor
-public class ComparisonResult {
+public class ComparisonResult implements Serializable {
 
 	// 기준 지역
 	private final CityResponse fromCity;

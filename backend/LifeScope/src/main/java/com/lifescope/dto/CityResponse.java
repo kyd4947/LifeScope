@@ -6,11 +6,13 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 
+import java.io.Serializable;
+
 // 지역 조회 응답 DTO : 엔티티의 연관 컬렉션 (cpiList 등)은 제외해 응답 경량화
 @Getter
 @Builder
 @AllArgsConstructor
-public class CityResponse {
+public class CityResponse implements Serializable {
 
 	// 법정동 코드 앞 5 자리
 	private final String code;

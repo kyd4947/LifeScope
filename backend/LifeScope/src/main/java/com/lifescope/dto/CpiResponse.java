@@ -1,5 +1,6 @@
 package com.lifescope.dto;
 
+import java.io.Serializable;
 import java.math.BigDecimal;
 
 import com.lifescope.domain.costOfLiving.ConsumerPriceIndex;
@@ -12,7 +13,7 @@ import lombok.Getter;
 @Getter
 @Builder
 @AllArgsConstructor
-public class CpiResponse {
+public class CpiResponse implements Serializable {
 
 	// 지역 코드
 	private final String cityCode;

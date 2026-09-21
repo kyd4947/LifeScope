@@ -6,11 +6,13 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 
+import java.io.Serializable;
+
 // 평균 임금 응답 DTO
 @Getter
 @Builder
 @AllArgsConstructor
-public class WageResponse {
+public class WageResponse implements Serializable {
 
 	// 지역 코드
 	private final String cityCode;
