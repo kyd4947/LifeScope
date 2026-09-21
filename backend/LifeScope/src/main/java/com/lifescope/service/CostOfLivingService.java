@@ -4,6 +4,7 @@ import java.math.BigDecimal;
 import java.util.List;
 import java.util.Optional;
 
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -21,12 +22,14 @@ public class CostOfLivingService {
 	private final CpiRepository cpiRepository;
 	
 	// 특정 도시의 최신 CPI 조회
+	@Cacheable(value = "cpiLatest", key = "#cityCode")
 	public Optional<CpiResponse> getLatestCpi(String cityCode){
 		return cpiRepository.findTopByCityCodeOrderByYearMonthDesc(cityCode)
 				.map(CpiResponse::from);
 	}
 	
 	// 특정 도시의 기간별 CPI 이력 조회 (from/to : YYYYMM)
+	@Cacheable(value = "cpiHistory", key = "#cityCode + ':' + #from + ':' + #to")
 	public List<CpiResponse> getCpiHistory(String cityCode, String from, String to){
 		return cpiRepository.findByCityCodeAndYearMonthBetween(cityCode, from, to)
 				.stream()
