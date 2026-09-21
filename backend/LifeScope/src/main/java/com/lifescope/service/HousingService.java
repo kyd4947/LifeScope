@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -25,6 +26,7 @@ public class HousingService {
 	private final HousingRepository housingRepository;
 	
 	// 특정 도시의 최신 주거비 조회
+	@Cacheable(value = "housingLatest", key = "#cityCode + ':' + #tradeType")
 	public Optional<HousingPriceResponse> getLatestPrice(String cityCode, String tradeType){
 		validateTradeType(tradeType);
 		return housingRepository
@@ -33,6 +35,7 @@ public class HousingService {
 	}
 	
 	// 특정 도시의 기간별 주거비 이력 조회 (from/to : YYYYMM)
+	@Cacheable(value = "housingHistory", key = "#cityCode + ':' + #tradeType + ':' + #from + ':' + #to")
 	public List<HousingPriceResponse> getPriceHistory(String cityCode, String tradeType, String from, String to){
 		validateTradeType(tradeType);
 		return housingRepository
