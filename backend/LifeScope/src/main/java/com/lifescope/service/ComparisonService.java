@@ -4,6 +4,7 @@ import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.util.Optional;
 
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -36,6 +37,7 @@ public class ComparisonService {
 	private final HousingRepository housingRepository;
 	
 	// 두 지역의 생활비 종합 비교
+	@Cacheable(value = "comparison", key = "#fromCode + ':' + #toCode + ':' + #monthlySalary")
 	public ComparisonResult compare(String fromCode, String toCode, Long monthlySalary) {
 		// 1. 두 지역 검증 (없으면 CityService 가 예외 발생)
 		City fromCity = cityService.getCityEntity(fromCode);
