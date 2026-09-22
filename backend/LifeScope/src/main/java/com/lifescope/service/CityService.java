@@ -40,7 +40,6 @@ public class CityService {
 	}
 	
 	// 지역명 키워드 검색
-	@Cacheable(value = "city", key = "#code")
 	public List<CityResponse> searchByName(String keyword){
 		return cityRepository.findByNameContainingAndIsActiveTrue(keyword)
 				.stream()
@@ -49,6 +48,7 @@ public class CityService {
 	}
 	
 	// 활성 지역 단건 조회 (없으면 예외)
+	@Cacheable(value = "city", key = "#code")
 	public CityResponse getActiveCity(String code) {
 		return cityRepository.findByCodeAndIsActiveTrue(code)
 				.map(CityResponse::from)
