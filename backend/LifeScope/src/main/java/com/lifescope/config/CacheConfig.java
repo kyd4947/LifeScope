@@ -22,7 +22,7 @@ public class CacheConfig {
 				.entryTtl(Duration.ofHours(1))
 				.serializeValuesWith(RedisSerializationContext.SerializationPair.fromSerializer(new JdkSerializationRedisSerializer()))
 				.disableCachingNullValues()
-				.computePrefixWith(name -> "lifescope: " + name + "::");
+				.computePrefixWith(name -> "lifescope:" + name + "::");
 		return RedisCacheManager.builder(connectionFactory).cacheDefaults(config).build();
 	}
 }
