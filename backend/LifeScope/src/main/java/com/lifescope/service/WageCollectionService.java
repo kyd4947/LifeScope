@@ -41,7 +41,7 @@ public class WageCollectionService {
 	
 	// 최신 연간 임금 수집 (전 지역)
 	@Transactional
-	@CacheEvict(value = {"wageLatest", "wageByYear", "wageRanking", "comparison"}, allEntries = true)
+	@CacheEvict(value = {"wageLatest", "wageByYear", "wageRanking", "comparison", "comparisonMulti"}, allEntries = true)
 	public int collectLatestWage() {
 		List<WageApiItem> items = kosisClient.fetchLatestWage(wageOrgId, wageTblId, wageItmId);
 		if(items == null || items.isEmpty()) {

@@ -32,7 +32,7 @@ public class HousingCollectionService {
 
     // 전달 월치 수집
     @Transactional
-    @CacheEvict(value = {"housingLatest", "housingHistory", "comparison"}, allEntries = true)
+    @CacheEvict(value = {"housingLatest", "housingHistory", "comparison", "comparisonMulti"}, allEntries = true)
     public int collectMonthlyHousing(String dealYmd){
         List<City>  cities = cityRepository.findByLevelAndIsActiveTrue((short) 1);              // 17개 시/도 (LAWD_CD 와 동일)
 

@@ -2,6 +2,7 @@ package com.lifescope.service;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
+import java.util.List;
 import java.util.Optional;
 
 import org.springframework.cache.annotation.Cacheable;
@@ -19,7 +20,10 @@ import com.lifescope.dto.CityResponse;
 import com.lifescope.dto.ComparisonResult;
 import com.lifescope.dto.ComparisonResult.HousingComparison;
 import com.lifescope.dto.ComparisonResult.WageComparison;
+import com.lifescope.dto.CpiResponse;
 import com.lifescope.dto.HousingPriceResponse;
+import com.lifescope.dto.MultiComparisonResponse;
+import com.lifescope.dto.MultiComparisonResponse.CityComparison;
 import com.lifescope.dto.WageResponse;
 
 import lombok.RequiredArgsConstructor;
@@ -70,6 +74,77 @@ public class ComparisonService {
 				.adjustedMonthlySalary(adjustedSalary)
 				.wage(buildWageComparison(fromCode, toCode))
 				.housing(buildHousingComparison(fromCode, toCode))
+				.build();
+	}
+	
+	// 다중 지역 비교 - cityCodes 의 첫 번째가 기준 지역
+	@Cacheable(value = "comparisonMulti", key = "#cityCodes + ':' + #monthlySalary")
+	public MultiComparisonResponse compareMulti(List<String> cityCodes, Long monthlySalary) {
+		// 1. 전 지역 검증 (하나라도 없으면 CityService 가 404 예외 발생)
+		List<City> cities = cityCodes.stream()
+				.map(cityService::getCityEntity)
+				.toList();
+		String baseCode = cityCodes.get(0);
+		
+		// 2. 기준 지역 데이터 1회 조회 (비교 기준값)
+		ConsumerPriceIndex baseCpi = cpiRepository
+				.findTopByCityCodeOrderByYearMonthDesc(baseCode)
+				.orElse(null);
+		Long baseWage = wageRepository.findTopByCityCodeOrderByYearDesc(baseCode)
+				.map(AverageWage::getWageAvg)
+				.orElse(null);
+		Long baseJeonse = housingRepository
+				.findTopByCityCodeAndTradeTypeOrderByYearMonthDesc(baseCode, "J")
+				.map(HousingPrice::getAvgPrice)
+				.orElse(null);
+		
+		// 3. 지역별 비교 조립
+		List<CityComparison> comparisons = cities.stream()
+				.map(city -> buildCityComparison(city, baseCpi, baseWage, baseJeonse, monthlySalary))
+				.toList();
+		
+		return MultiComparisonResponse.builder()
+				.baseCity(CityResponse.from(cities.get(0)))
+				.inputMonthlySalary(monthlySalary)
+				.cities(comparisons)
+				.build();
+	}
+	
+	// 개별 지역 비교 조립 (데이터가 없는 항목은 null - 부분 비교 가능)
+	private CityComparison buildCityComparison(
+			City city,
+			ConsumerPriceIndex baseCpi,
+			Long baseWage,
+			Long baseJeonse,
+			Long monthlySalary) {
+		
+		String code = city.getCode();
+		Optional<ConsumerPriceIndex> cpi = cpiRepository.findTopByCityCodeOrderByYearMonthDesc(code);
+		Optional<AverageWage> wage = wageRepository.findTopByCityCodeOrderByYearDesc(code);
+		Optional<HousingPrice> jeonse = housingRepository
+				.findTopByCityCodeAndTradeTypeOrderByYearMonthDesc(code, "J");
+		
+		// 물가 비율 + 환산 월급 (기준 CPI 가 존재하고 0이 아닐 때만)
+		BigDecimal cpiRatio = null;
+		Long adjustedSalary = null;
+		if(baseCpi != null && cpi.isPresent() && baseCpi.getCpiValue().compareTo(BigDecimal.ZERO) != 0) {
+			BigDecimal targetValue = cpi.get().getCpiValue();
+			cpiRatio = targetValue.divide(baseCpi.getCpiValue(), 4, RoundingMode.HALF_UP);
+			// CPI 엔티티의 adjustSalary() 재활용 (물가 보정 월급)
+			adjustedSalary = baseCpi.adjustSalary(targetValue, monthlySalary)
+					.setScale(0, RoundingMode.HALF_UP)
+					.longValue();
+		}
+		
+		return CityComparison.builder()
+				.city(CityResponse.from(city))
+				.cpi(cpi.map(CpiResponse::from).orElse(null))
+				.cpiRatio(cpiRatio)
+				.adjustedMonthlySalary(adjustedSalary)
+				.wage(wage.map(WageResponse::from).orElse(null))
+				.wageRatio(wage.map(w -> divideSafely(w.getWageAvg(), baseWage)).orElse(null))
+				.housing(jeonse.map(HousingPriceResponse::from).orElse(null))
+				.housingRatio(jeonse.map(h -> divideSafely(h.getAvgPrice(), baseJeonse)).orElse(null))
 				.build();
 	}
 	

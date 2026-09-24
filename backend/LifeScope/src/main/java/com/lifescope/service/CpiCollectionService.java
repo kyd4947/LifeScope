@@ -36,7 +36,7 @@ public class CpiCollectionService {
 	
 	// 최신(월) CPI 수집 1회 실행, 저장 + 갱신 건수 변환
 	@Transactional
-	@CacheEvict(value = {"cpiLatest", "cpiHistory", "comparison"}, allEntries = true)
+	@CacheEvict(value = {"cpiLatest", "cpiHistory", "comparison", "comparisonMulti"}, allEntries = true)
 	public int collectLatestCpi() {
 		List<CpiApiItem> items = kosisClient.fetchLatestCpi();
 		
