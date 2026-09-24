@@ -26,6 +26,7 @@ dist/
 out/
 target/
 .gradle/
+node_modules/
 !gradle/wrapper/gradle-wrapper.jar
 gradle-wrapper.properties
 .mvn/

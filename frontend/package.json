@@ -1,0 +1,18 @@
+{
+  "name": "lifescope-frontend",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "description": "지역별 생활비 분석 서비스 - 프론트엔드",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview"
+  },
+  "dependencies": {
+    "chart.js": "^4.4.7"
+  },
+  "devDependencies": {
+    "vite": "^6.0.7"
+  }
+}
