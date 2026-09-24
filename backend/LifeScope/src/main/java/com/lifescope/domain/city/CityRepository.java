@@ -23,10 +23,6 @@ public interface CityRepository extends JpaRepository<City, String>{
 	// 지역 코드 활성 상태인 단 건 도시 정보 조회
 	Optional<City> findByCodeAndIsActiveTrue(String code);
 	
-	// 모든 활성 도시 지역 계층 순, 이름 순으로 정렬 및 조회
-	@Query("SELECT c FROM City c WHERE c.isActive = true ORDER BY c.level, c.name")
-	List<City> findAllActiveOrderByLevelAndName();
-	
 	// 특정 계층 레벨 해당 활성 도시 목록 이름 순으로 조회
 	@Query("SELECT c FROM City c WHERE c.level = :level AND c.isActive = true ORDER BY c.name")
 	List<City> findByLevelAndIsActiveTrue(@Param("level") Short level);
