@@ -9,6 +9,9 @@ import org.springframework.web.client.RestClient;
 import com.lifescope.client.dto.CpiApiItem;
 import com.lifescope.client.dto.WageApiItem;
 
+import io.github.resilience4j.circuitbreaker.CircuitBreaker;
+import io.github.resilience4j.retry.Retry;
+
 import tools.jackson.core.JacksonException;
 import tools.jackson.core.type.TypeReference;
 import tools.jackson.databind.json.JsonMapper;
@@ -23,6 +26,8 @@ public class KosisClient {
 	private final String tblId;
 	private final String itmId;
 	private final JsonMapper jsonMapper;
+	private final Retry publicApiRetry;
+	private final CircuitBreaker publicApiCircuitBreaker;
 	
 	// 생성자 주입
 	public KosisClient(
@@ -32,7 +37,9 @@ public class KosisClient {
 			@Value("${kosis.api-key:}") String apiKey,
 			@Value("${kosis.cpi-org-id:101}") String orgId,
 			@Value("${kosis.cpi-tbl-id:INH_1J22003}") String tblId,
-			@Value("${kosis.cpi-itm-id:T}") String itmId) {
+			@Value("${kosis.cpi-itm-id:T}") String itmId,
+			Retry publicApiRetry,
+			CircuitBreaker publicApiCircuitBreaker) {
 		this.restClient = builder
 				.baseUrl(baseUrl)
 				// KOSIS가 자바 기본 User-Agent 요청에 HTML을 반환하므로 브라우저 식별자로 고정
@@ -43,6 +50,8 @@ public class KosisClient {
 		this.tblId = tblId;
 		this.itmId = itmId;
 		this.jsonMapper = jsonMapper;
+		this.publicApiRetry = publicApiRetry;
+		this.publicApiCircuitBreaker = publicApiCircuitBreaker;
 	}
 	
 	// 최신(월) CPI 전 지역 조회 (전국 포함 18건 예상)
@@ -50,7 +59,13 @@ public class KosisClient {
 		if(apiKey == null || apiKey.isBlank()) {
 			throw new IllegalStateException("KOSIS_API_KEY 환경변수가 설정되지 않았습니다.");
 		}
-		
+		// 서킷 최외곽 : OPEN 상태면 재시도 없이 즉시 차단, CLOSED 면 재시도로 실행
+		return publicApiCircuitBreaker.decorateSupplier(
+				publicApiRetry.decorateSupplier(this::fetchLatestCpiRaw)).get();
+	}
+	
+	// 실제 CPI 호출/파싱 - 재시도 및 서킷브레이커 적용 대상
+	private List<CpiApiItem> fetchLatestCpiRaw() {
 		String rawBody = restClient.get()
 				.uri(uriBuilder -> uriBuilder
 						.queryParam("method", "getList")
@@ -84,7 +99,12 @@ public class KosisClient {
 		if(orgId == null || orgId.isBlank() || tblId == null || tblId.isBlank()) {
 			throw new IllegalStateException("임금 통계표 ID(kosis.wage-org-id / kosis.wage-tbl-id)가 설정되지 않았습니다.");
 		}
-
+		return publicApiCircuitBreaker.decorateSupplier(
+				publicApiRetry.decorateSupplier(() -> fetchLatestWageRaw(orgId, tblId, itmId))).get();
+	}
+	
+	// 실제 임금 호출/파싱 - 재시도 및 서킷브레이커 적용 대상
+	private List<WageApiItem> fetchLatestWageRaw(String orgId, String tblId, String itmId) {
 		String rawBody = restClient.get()
 				.uri(uriBuilder -> uriBuilder
 						.queryParam("method", "getList")
