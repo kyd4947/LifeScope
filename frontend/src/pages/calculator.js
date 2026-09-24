@@ -125,7 +125,7 @@ function realIncomePanel() {
 
   return el('div', { class: 'stack' }, [
     el('div', { class: 'surface-paper torn-edge stack' }, [
-      el('span', { class: 'duct-tape', text: '연봉 →到手' }),
+      el('span', { class: 'duct-tape', text: '연봉 -> 실수령액' }),
       el('div', { class: 'field', style: 'max-width: 320px' }, [
         el('label', { class: 'field-label', for: 'annual', text: '연봉 (원)' }),
         input,

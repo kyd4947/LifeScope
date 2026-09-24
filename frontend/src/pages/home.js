@@ -1,72 +1,70 @@
 import { el } from '../utils/dom.js';
 import { ROUTES } from '../constants/index.js';
 
+// 히어로 배경 이미지
+// Wikimedia Commons · CC0 1.0 — 서울 스카이라인 2018 (mauveine.kim)
+const IMAGES = {
+  hero: {
+    src: '/images/seoul-skyline.jpg',
+    alt: '서울 야경 스카이라인',
+  },
+};
+
+// 기능 카드 : 12열 그리드에서 4 + 4 + 4 로 나눠 한 행에 동일 크기로 배치
 const FEATURES = [
   {
-    size: 'col-7',
     tape: 'MULTI CITY',
-    title: '2~5개 지역 나란히',
-    text: '기준 도시를 정해 물가·임금·주거비를 한 화면에 붙여 놓습니다. CPI 비율로 월급 환산까지 계산합니다.',
-    cta: { label: '지역 비교 열기', href: ROUTES.COMPARE },
+    stamp: '2~5',
+    title: '여러 도시를 한 번에',
+    text: '기준 도시를 정해 물가·임금·주거비를 나란히 놓고, CPI 비율로 월급까지 환산합니다.',
+    cta: { label: '지역 비교', href: ROUTES.COMPARE },
   },
   {
-    size: 'col-5',
     tape: 'CALCULATOR',
-    title: '실수령액부터 실질 구매력까지',
-    text: '연봉에서 4대보험과소득세를 뺀 실제到手 금액, 전세 차이를 반영한 구매력까지 계산합니다.',
-    cta: { label: '계산기 열기', href: ROUTES.CALCULATOR },
+    stamp: '3종',
+    title: '손에 남는 돈까지',
+    text: '4대보험과 소득세를 뺀 실수령액, 전세 차이를 반영한 실질 구매력까지 계산합니다.',
+    cta: { label: '계산기', href: ROUTES.CALCULATOR },
   },
   {
-    size: 'col-5',
     tape: 'REGIONS',
+    stamp: '17',
     title: '시 단위 데이터',
-    text: '통계청 CPI, 고용노동부 임금, 국토교통부 실거래가. 전국 시/도 17곳을 기준으로 모았습니다.',
-    cta: { label: '지역 정보 보기', href: ROUTES.REGIONS },
+    text: '통계청·고용노동부·국토교통부 데이터를 전국 17개 시/도로 모았습니다.',
+    cta: { label: '지역 정보', href: ROUTES.REGIONS },
   },
-];
-
-const SOURCES = [
-  { name: '통계청 KOSIS', desc: '소비자물가지수 · 평균임금', tone: 'accent' },
-  { name: '국토교통부', desc: '아파트 매매 · 전세 실거래가', tone: 'decor' },
-  { name: 'Oracle Cloud', desc: 'Always Free 인프라', tone: 'warn' },
 ];
 
 export function renderHome(root) {
   root.replaceChildren(
-    el('div', { class: 'on-dark' }, [
-      // ---- Hero : 비대칭 배치 ----
-      el('section', { class: 'section' }, [
-        el('div', { class: 'container grid-asym' }, [
+    // ---- Hero : 사진 배경 + 오버레이 ----
+    el('section', { class: 'section', style: 'padding-block: 0; position: relative; overflow: hidden' }, [
+      photo(IMAGES.hero, 'photo-hero'),
+      el('div', { class: 'container', style: 'position: relative; z-index: 2; padding-block: var(--section-gap)' }, [
+        el('div', { class: 'grid-asym' }, [
           el('div', { class: 'col-7 stack entry' }, [
             el('span', { class: 'duct-tape', text: '전국 시 단위 생활비 분석' }),
             el('h1', { class: 'hero-title' }, [
-              el('span', { class: 'misregister', 'data-text': '어디로', text: '어디로' }),
-              document.createTextNode(' 이직할지,'),
+              document.createTextNode('월급은 같아도,'),
             ]),
-            el('h1', { class: 'hero-title accent', text: '숫자로 비교하세요' }),
-            el('p', { class: 'muted', style: 'max-width: 58ch; margin-top: 1rem' }, [
+            el('h1', { class: 'hero-title accent' }, [
+              el('span', { class: 'misregister', 'data-text': '사는 비용은 다르다', text: '사는 비용은 다르다' }),
+            ]),
+            el('p', { style: 'max-width: 56ch; margin-top: 0.5rem' }, [
               document.createTextNode(
-                '월급이 같아도 사는 비용은 다릅니다. 물가, 임금, 주거비를 같은 기준에 놓고 여러 도시를 나란히 놓습니다.',
+                '물가, 임금, 주거비를 같은 기준에 놓고 여러 도시를 나란히 놓습니다. CPI 비율로 환산한 실질 구매력이 답입니다.',
               ),
             ]),
-            el('div', { class: 'row', style: 'margin-top: 2rem' }, [
-              el('a', {
-                class: 'btn btn-cta',
-                href: ROUTES.COMPARE,
-                text: '지역 비교 시작',
-              }),
-              el('a', {
-                class: 'btn btn-ghost',
-                href: ROUTES.CALCULATOR,
-                text: '계산기 열기',
-              }),
+            el('div', { class: 'row', style: 'margin-top: 1.5rem' }, [
+              el('a', { class: 'btn btn-cta', href: ROUTES.COMPARE, text: '지역 비교 시작' }),
+              el('a', { class: 'btn btn-ghost', href: ROUTES.CALCULATOR, text: '계산기 열기' }),
             ]),
           ]),
-          el('div', { class: 'col-5 entry', style: 'align-self: end' }, [
-            el('div', { class: 'surface-paper torn-edge stack' }, [
-              el('span', { class: 'label', text: '왜 비교가 필요한가' }),
+          el('div', { class: 'col-5 entry', style: 'align-self: center' }, [
+            el('div', { class: 'surface-paper stack' }, [
+              el('span', { class: 'stamp', text: '왜 비교가 필요한가' }),
               el('p', {
-                text: '같은 연봉 4,000만 원을 서울과 부산에서 받더라도, 살 수 있는 생활은 다릅니다. CPI 비율로 환산한 실질 구매력이 답입니다.',
+                text: '같은 연봉 4,000만 원을 서울과 부산에서 받더라도, 살 수 있는 생활은 다릅니다. CPI 비율로 환산하면 그 차이가 바로 드러납니다.',
               }),
               el('hr', { class: 'divider' }),
               el('div', { class: 'row', style: 'justify-content: space-between' }, [
@@ -81,60 +79,58 @@ export function renderHome(root) {
           ]),
         ]),
       ]),
+    ]),
 
-      // ---- Feature : 비대칭 지그재그 ----
-      el('section', { class: 'section' }, [
-        el('div', { class: 'container stack' }, [
-          el('div', { class: 'row', style: 'gap: 1rem; align-items: center' }, [
-            el('hr', { class: 'divider', style: 'flex: 1' }),
-            el('span', { class: 'label', text: '기능' }),
-          ]),
-          el('div', { class: 'grid-asym stagger' },
-            FEATURES.map((feature) =>
-              el('article', { class: `card ${feature.size}` }, [
+    // ---- Feature : 1행 3개 압축 배치 ----
+    el('section', { class: 'section', style: 'padding-block: var(--space-8)' }, [
+      el('div', { class: 'container stack' }, [
+        sectionLabel('기능'),
+        el('div', { class: 'grid-asym stagger feature-row' },
+          FEATURES.map((feature) =>
+            el('article', { class: 'card card-compact col-4 stack' }, [
+              el('div', { class: 'row', style: 'justify-content: space-between; align-items: center' }, [
                 el('span', { class: 'duct-tape', text: feature.tape }),
-                el('h2', { class: 'card-title', style: 'margin-top: 1rem', text: feature.title }),
-                el('p', { class: 'muted', text: feature.text }),
-                el('a', {
-                  class: 'btn btn-ghost',
-                  href: feature.cta.href,
-                  text: feature.cta.label,
-                  style: 'margin-top: 1.25rem; align-self: flex-start',
-                }),
+                el('span', { class: 'stamp', text: feature.stamp }),
               ]),
-            ),
-          ),
-        ]),
-      ]),
-
-      // ---- Sources ----
-      el('section', { class: 'section' }, [
-        el('div', { class: 'container stack' }, [
-          el('div', { class: 'row', style: 'gap: 1rem; align-items: center' }, [
-            el('hr', { class: 'divider', style: 'flex: 1' }),
-            el('span', { class: 'label', text: '출처' }),
-          ]),
-          el('div', { class: 'grid-asym' }, [
-            el('div', { class: 'col-8 surface-dark' }, [
-              el('div', { class: 'grid-asym', style: 'gap: 1.5rem' },
-                SOURCES.map((source) =>
-                  el('div', { class: 'col-4 stack' }, [
-                    el('span', { class: `label ${source.tone}`, text: source.name }),
-                    el('span', { text: source.desc }),
-                  ]),
-                ),
-              ),
-            ]),
-            el('div', { class: 'col-4 surface-dark stack' }, [
-              el('span', { class: 'label', text: '방법론' }),
-              el('p', {
-                text: '물가는 CPI 비율로 환산하고, 임금은 연 평균을 월 평균으로 나눕니다. 주거비는 전세 기준으로 비교합니다.',
+              el('h2', { class: 'card-title', text: feature.title }),
+              el('p', { text: feature.text }),
+              el('a', {
+                class: 'btn btn-ghost',
+                href: feature.cta.href,
+                text: feature.cta.label,
+                style: 'align-self: flex-start',
               }),
-              el('a', { class: 'btn btn-ghost', href: ROUTES.ABOUT, text: '자세히' }),
             ]),
-          ]),
+          ),
+        ),
+      ]),
+    ]),
+
+    // ---- CTA ----
+    el('section', { class: 'section', style: 'padding-block: var(--space-8)' }, [
+      el('div', { class: 'container' }, [
+        el('div', { class: 'surface-dark torn-edge stack', style: 'align-items: flex-start; gap: 1.5rem' }, [
+          el('span', { class: 'duct-tape', text: 'START HERE' }),
+          el('h2', { class: 'card-title', style: 'font-size: 1.75rem', text: '두 도시를 골라 비교해 보세요' }),
+          el('p', { text: '기준 도시를 정하면 나머지는 물가와 임금, 전세 비율이 자동으로 계산됩니다.' }),
+          el('a', { class: 'btn btn-cta', href: ROUTES.COMPARE, text: '지역 비교 시작' }),
         ]),
       ]),
     ]),
   );
+}
+
+function photo(image, modifier = '') {
+  return el('figure', { class: `photo ${modifier}`.trim() }, [
+    el('img', { src: image.src, alt: image.alt, loading: 'lazy', decoding: 'async' }),
+    // 그레인 레이어를 span 으로 분리 (::after 는 비네트 전용)
+    el('span', { class: 'photo-grain', 'aria-hidden': 'true' }),
+  ]);
+}
+
+function sectionLabel(text) {
+  return el('div', { class: 'row', style: 'gap: 1rem; align-items: center' }, [
+    el('hr', { class: 'divider', style: 'flex: 1' }),
+    el('span', { class: 'label', text }),
+  ]);
 }

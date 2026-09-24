@@ -251,6 +251,14 @@ function drawChart(canvasId, cities, field, title, color) {
   // 동적 import — 첫 화면 로딩 비용 절약
   import('chart.js/auto').then(({ default: Chart }) => {
     if (chart) chart.destroy();
+
+    // 종이 배경(밝은 컨텍스트)에 맞춘 차트 테마
+    Chart.defaults.font.family = "'Courier Prime', 'Courier New', monospace";
+    Chart.defaults.font.size = 12;
+    Chart.defaults.color = '#2e2e2e';
+
+    const palette = ['#3b5998', '#6b8e23', '#a84700', '#8c2727', '#b5a642'];
+
     chart = new Chart(canvas, {
       type: 'bar',
       data: {
@@ -259,9 +267,10 @@ function drawChart(canvasId, cities, field, title, color) {
           {
             label: title,
             data: cities.map((c) => c[field]),
-            backgroundColor: color,
+            backgroundColor: cities.map((_, i) => palette[i % palette.length]),
             borderColor: '#2e2e2e',
-            borderWidth: 1,
+            borderWidth: 1.5,
+            borderRadius: 2,
           },
         ],
       },
@@ -278,10 +287,14 @@ function drawChart(canvasId, cities, field, title, color) {
         },
         scales: {
           y: {
-            title: { display: true, text: title },
-            grid: { color: 'rgba(46,46,46,0.12)' },
+            title: { display: true, text: title, color: '#2e2e2e' },
+            grid: { color: 'rgba(46,46,46,0.14)' },
+            ticks: { color: '#2e2e2e' },
           },
-          x: { grid: { display: false } },
+          x: {
+            grid: { display: false },
+            ticks: { color: '#2e2e2e' },
+          },
         },
       },
     });
