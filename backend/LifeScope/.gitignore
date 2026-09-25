@@ -27,7 +27,8 @@ out/
 target/
 .gradle/
 !gradle/wrapper/gradle-wrapper.jar
-gradle-wrapper.properties
+# gradle wrapper 는 CI/신규 개발자 환경 구성이므로 반드시 추적한다
+!gradle/wrapper/gradle-wrapper.properties
 .mvn/
 *.class
 *.jar
@@ -52,6 +53,8 @@ application-secret.yml
 application-secrets.yml
 .env
 .env.*
+# gradle wrapper 는 빌드 구성이라 예외 처리 (위 *.properties 규칙에 걸리지 않도록)
+!gradle/wrapper/gradle-wrapper.properties
 # 값이 없는 템플릿은 공유해야 하므로 예외 처리
 !.env.example
 ssh-key-2026-08-25.key
