@@ -32,9 +32,13 @@ public class WageController {
 			@Parameter(description="지역 코드") @PathVariable String code,
 			@Parameter(description="조회 연도, 생략 시 최신") @RequestParam(required=false) Short year){
 		
-		return ResponseEntity.ok(
-				(year != null ? wageService.getWageByYear(code, year) : wageService.getLatestWage(code))
-				.orElseThrow(() -> new DataNotFoundException("임금 데이터가 없습니다. 지역 코드 : " + code)));
+		WageResponse wage = (year != null
+				? wageService.getWageByYear(code, year)
+				: wageService.getLatestWage(code));
+		if(wage == null) {
+			throw new DataNotFoundException("임금 데이터가 없습니다. 지역 코드 : " + code);
+		}
+		return ResponseEntity.ok(wage);
 	}
 	
 	// 전국 임금 순위

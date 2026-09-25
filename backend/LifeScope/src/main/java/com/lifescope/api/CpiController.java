@@ -41,7 +41,10 @@ public class CpiController {
 			List<CpiResponse> history = costOfLivingService.getCpiHistory(code, from, to);
 			return ResponseEntity.ok(history);
 		}
-		return ResponseEntity.ok(costOfLivingService.getLatestCpi(code)
-				.orElseThrow(() -> new DataNotFoundException("물가 지수 데이터가 없습니다. 지역 코드 : " + code)));
+		CpiResponse latest = costOfLivingService.getLatestCpi(code);
+		if(latest == null) {
+			throw new DataNotFoundException("물가 지수 데이터가 없습니다. 지역 코드 : " + code);
+		}
+		return ResponseEntity.ok(latest);
 	}
 }

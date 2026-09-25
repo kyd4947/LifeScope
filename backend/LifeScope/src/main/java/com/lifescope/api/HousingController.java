@@ -40,7 +40,10 @@ public class HousingController {
 			List<HousingPriceResponse> history = housingService.getPriceHistory(code, tradeType, from, to);
 			return ResponseEntity.ok(history);
 		}
-		return ResponseEntity.ok(housingService.getLatestPrice(code, tradeType)
-				.orElseThrow(() -> new DataNotFoundException("주거비 데이터가 없습니다. 지역 코드 : " + code + ", 거래 유형 : " + tradeType)));
+		HousingPriceResponse latest = housingService.getLatestPrice(code, tradeType);
+		if(latest == null) {
+			throw new DataNotFoundException("주거비 데이터가 없습니다. 지역 코드 : " + code + ", 거래 유형 : " + tradeType);
+		}
+		return ResponseEntity.ok(latest);
 	}
 }

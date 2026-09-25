@@ -26,12 +26,15 @@ public class HousingService {
 	private final HousingRepository housingRepository;
 	
 	// 특정 도시의 최신 주거비 조회
-	@Cacheable(value = "housingLatest", key = "#cityCode + ':' + #tradeType")
-	public Optional<HousingPriceResponse> getLatestPrice(String cityCode, String tradeType){
+	// 캐시 계층은 Optional 을 언래핑하므로 Optional 을 반환하면 캐시 히트 시
+	// 캐스팅 불일치(ClassCastException)가 발생한다. null 로 반환하고 unless 로 제어한다.
+	@Cacheable(value = "housingLatest", key = "#cityCode + ':' + #tradeType", unless = "#result == null")
+	public HousingPriceResponse getLatestPrice(String cityCode, String tradeType){
 		validateTradeType(tradeType);
 		return housingRepository
 				.findTopByCityCodeAndTradeTypeOrderByYearMonthDesc(cityCode, tradeType)
-				.map(HousingPriceResponse::from);
+				.map(HousingPriceResponse::from)
+				.orElse(null);
 	}
 	
 	// 특정 도시의 기간별 주거비 이력 조회 (from/to : YYYYMM)

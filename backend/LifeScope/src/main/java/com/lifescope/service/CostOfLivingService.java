@@ -22,10 +22,13 @@ public class CostOfLivingService {
 	private final CpiRepository cpiRepository;
 	
 	// 특정 도시의 최신 CPI 조회
-	@Cacheable(value = "cpiLatest", key = "#cityCode")
-	public Optional<CpiResponse> getLatestCpi(String cityCode){
+	// 캐시 계층은 Optional 을 언래핑하므로 Optional 을 반환하면 캐시 히트 시
+	// 캐스팅 불일치(ClassCastException)가 발생한다. null 로 반환하고 unless 로 제어한다.
+	@Cacheable(value = "cpiLatest", key = "#cityCode", unless = "#result == null")
+	public CpiResponse getLatestCpi(String cityCode){
 		return cpiRepository.findTopByCityCodeOrderByYearMonthDesc(cityCode)
-				.map(CpiResponse::from);
+				.map(CpiResponse::from)
+				.orElse(null);
 	}
 	
 	// 특정 도시의 기간별 CPI 이력 조회 (from/to : YYYYMM)
