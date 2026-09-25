@@ -20,15 +20,21 @@ import io.github.resilience4j.retry.Retry;
 import lombok.extern.slf4j.Slf4j;
 
 // 국토부(공공데이터포털) 실거래가 API 클라이언트
-// 		- 매매 : getRTMDataSvcAptTradeDev (아파트 매매 실거래)
-//		- 전월세 : getRTMDataSvcAptRent (아파트 전월세 실거래)
+// 		- 매매 : getRTMSDataSvcAptTradeDev (아파트 매매 실거래가 상세 자료)
+//		- 전월세 : getRTMSDataSvcAptRent (아파트 전월세 실거래가 자료)
+//		- 주의 : operation 명에 RTMS 의 S 가 포함된다. RTM 으로 쓰면 404 이다.
 //		- 주의 : 공공데이터포털 키는 URL 인코딩 상태라 RestClient 인코딩 시 이중 인코딩 됨 -> 문자열 url 조립 후 URI.create() 로 인코딩 우회
 @Slf4j
 @Component
 public class MolitClient {
 
-	private static final String SALE_OPERATION = "getRTMDataSvcAptTradeDev";
-	private static final String RENT_OPERATION = "getRTMDataSvcAptRent";
+	// 국토교통부 실거래가 API 호출 경로
+	//		- public data portal 통합 게이트웨이 (https) 기준
+	//		- 매매 : /1613000/RTMSDataSvcAptTradeDev/getRTMSDataSvcAptTradeDev
+	//		- 전월세 : /1613000/RTMSDataSvcAptRent/getRTMSDataSvcAptRent
+	//		- 매매/전월세는 경로 접두사부터 다르므로 각각 조립한다.
+	private static final String SALE_PATH = "/1613000/RTMSDataSvcAptTradeDev/getRTMSDataSvcAptTradeDev";
+	private static final String RENT_PATH = "/1613000/RTMSDataSvcAptRent/getRTMSDataSvcAptRent";
 	
 	private final RestClient restClient;
 	private final String baseUrl;
@@ -62,7 +68,7 @@ public class MolitClient {
 		List<TradeApiItem> allItems = new ArrayList<>();
 		int pageNo = 1;
 		while(true) {
-			MolitSaleResponse page = getPage(SALE_OPERATION, lawdCode, dealYmd, pageNo, MolitSaleResponse.class);
+			MolitSaleResponse page = getPage(SALE_PATH, lawdCode, dealYmd, pageNo, MolitSaleResponse.class);
 			if(!"000".equals(page.getResponse().getHeader().getResultCode())) {
 				throw new IllegalStateException("MOLIT 매매 API 오류 : " + page.getResponse().getHeader().getResultCode() + " " + page.getResponse().getHeader().getResultMsg());
 			}
@@ -86,7 +92,7 @@ public class MolitClient {
 		List<RentApiItem> allItems = new ArrayList<>();
 		int pageNo = 1;
 		while(true) {
-			MolitRentResponse page = getPage(RENT_OPERATION, lawdCode, dealYmd, pageNo, MolitRentResponse.class);
+			MolitRentResponse page = getPage(RENT_PATH, lawdCode, dealYmd, pageNo, MolitRentResponse.class);
 			if(!"000".equals(page.getResponse().getHeader().getResultCode())) {
 				throw new IllegalStateException("MOLIT 전월세 API 오류 : " + page.getResponse().getHeader().getResultCode() + " " + page.getResponse().getHeader().getResultMsg());
 			}
@@ -106,10 +112,11 @@ public class MolitClient {
 	
 	// 단일 페이지 조회 - 문자열 URL 직접 조립 후 URI.create() 로 인코딩 우회
 	// 서킷 최외곽 : OPEN 상태면 재시도 없이 즉시 차단, CLOSED 면 재시도로 실행
-	private <R> R getPage(String operation, String lawdCode, String dealYmd, int pageNo, Class<R> responseType) {
+	private <R> R getPage(String path, String lawdCode, String dealYmd, int pageNo, Class<R> responseType) {
 		return publicApiCircuitBreaker.decorateSupplier(
 				publicApiRetry.decorateSupplier(() -> {
-					String url = baseUrl + "/" + operation
+					// path 는 앞쪽 슬래시를 포함한다 (baseUrl 끝의 슬래시와 중복되지 않게)
+					String url = baseUrl + path
 							+ "?serviceKey=" + serviceKey
 							+ "&LAWD_CD=" + lawdCode
 							+ "&DEAL_YMD=" + dealYmd

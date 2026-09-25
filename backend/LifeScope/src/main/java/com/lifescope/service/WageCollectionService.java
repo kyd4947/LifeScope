@@ -53,6 +53,19 @@ public class WageCollectionService {
 		int skipped = 0;
 		
 		for(WageApiItem item : items) {
+			// 0. 항목 필터 : itmId=ALL 로 조회하면 "상용 월평균 임금" 과
+			//    "상용 월평균 임금 전년 대비 증감률" 이 함께 내려온다.
+			//    증감률은 단위가 % 이고 값이 2.7 처럼 소수라 임금으로 쓰면 안 된다.
+			if(item.getItemName() == null || !item.getItemName().contains("월평균 임금")) {
+				skipped++;
+				continue;
+			}
+			// 증감률 항목은 이름에 "증감률" 이 붙는다. 임금만 남긴다.
+			if(item.getItemName().contains("증감률")) {
+				skipped++;
+				continue;
+			}
+			
 			// 1. 지역명 -> 코드 (전국 등은 empty)
 			Optional<String> cityCode = KosisRegionMapper.toCityCode(item.getRegionName());
 			if(cityCode.isEmpty()) {

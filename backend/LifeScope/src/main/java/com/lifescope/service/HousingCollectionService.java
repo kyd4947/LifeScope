@@ -34,7 +34,16 @@ public class HousingCollectionService {
     @Transactional
     @CacheEvict(value = {"housingLatest", "housingHistory", "comparison", "comparisonMulti"}, allEntries = true)
     public int collectMonthlyHousing(String dealYmd){
-        List<City>  cities = cityRepository.findByLevelAndIsActiveTrue((short) 1);              // 17개 시/도 (LAWD_CD 와 동일)
+        // LAWD_CD 는 행정구역 5자리 코드를 받는다.
+        // 실측 결과 "시도" 코드(11000 등)는 totalCount=0 을 반환하고,
+        // "시군구" 코드(11110 등)에서만 데이터가 나온다.
+        // 따라서 level=2(시군구) 를 순회해야 한다.
+        List<City> cities = cityRepository.findByLevelAndIsActiveTrue((short) 2);
+
+        // 시군구가 없는 도시는 (시도 직접 조회로 대체)
+        cityRepository.findByLevelAndIsActiveTrue((short) 1).stream()
+                .filter(province -> cities.stream().noneMatch(town -> province.getCode().equals(town.getParentCode())))
+                .forEach(cities::add);
 
         int saved = 0;
         int updated = 0;

@@ -52,6 +52,8 @@ application-secret.yml
 application-secrets.yml
 .env
 .env.*
+# 값이 없는 템플릿은 공유해야 하므로 예외 처리
+!.env.example
 ssh-key-2026-08-25.key
 
 # ===== 테스트 / 리포트 =====
