@@ -50,28 +50,39 @@ public class HousingCollectionService {
         int failed = 0;
 
         for(City city : cities){
-            try{
-                // 1. 매매 -> M
-                int[] sale = aggregateSale(molitClient.fetchAptSale(city.getCode(), dealYmd));
-                int r = upsert(city, "M", dealYmd, sale);
-                saved += r;
-                updated += (sale != null && r == 0 ? 1 : 0);
-
-                // 2. 전월세 -> J (보증금) / W (월세)
+            // 전월세를 먼저 수집한다.
+            // 매매 API 권한 오류가 발생해도 전세/월세 수집은 계속되어야 한다.
+            try {
                 List<RentApiItem> rents = molitClient.fetchAptRent(city.getCode(), dealYmd);
+
                 int[] jeonse = aggregateRent(rents, true);
-                r = upsert(city, "J", dealYmd, jeonse);
-                saved += r;
-                updated += (jeonse != null && r == 0 ? 1 : 0);
-                
-                int [] wolse = aggregateRent(rents, false);
-                r = upsert(city, "W", dealYmd, wolse);
-                saved += r;
-                updated += (wolse != null && r == 0 ? 1 : 0);
+                int result = upsert(city, "J", dealYmd, jeonse);
+                saved += result;
+                updated += (jeonse != null && result == 0 ? 1 : 0);
+
+                int[] wolse = aggregateRent(rents, false);
+                result = upsert(city, "W", dealYmd, wolse);
+                saved += result;
+                updated += (wolse != null && result == 0 ? 1 : 0);
             } catch (Exception e) {
-            	// 도시 1개 실패가 전체 수집 중단시키지 않도록 예외 격리
-            	log.warn("주거비 수집 실패, 스킵 : city = {}, ym = {}, 원인 = {}", city.getName(), dealYmd, e.getMessage());
-            	failed++;
+                // 전월세 실패는 매매 수집을 막지 않는다.
+                log.warn("전월세 수집 실패, 스킵 : city = {}, ym = {}, 원인 = {}",
+                        city.getName(), dealYmd, e.getMessage());
+                failed++;
+            }
+
+            try {
+                // 매매 -> M
+                int[] sale = aggregateSale(molitClient.fetchAptSale(city.getCode(), dealYmd));
+                int result = upsert(city, "M", dealYmd, sale);
+                saved += result;
+                updated += (sale != null && result == 0 ? 1 : 0);
+            } catch (Exception e) {
+                // 매매 API는 활용신청 상태에 따라 실패할 수 있다.
+                // 전월세 결과는 이미 처리했으므로 다음 도시로 진행한다.
+                log.warn("매매 수집 실패, 스킵 : city = {}, ym = {}, 원인 = {}",
+                        city.getName(), dealYmd, e.getMessage());
+                failed++;
             }
         }
         log.info("주거비 수집 완료 ({}) : 신규 {} 건, 갱신 {} 건, 실패 지역 {} 개", dealYmd, saved, updated, failed);

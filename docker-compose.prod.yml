@@ -24,7 +24,8 @@ services:
 
     # vm-2 의 PostgreSQL 로 연결
     environment:
-      SPRING_DATASOURCE_URL: jdbc:postgresql://158.179.181.70:5432/lifescope
+      # vm-2 사설 주소로만 PostgreSQL 에 연결한다.
+      SPRING_DATASOURCE_URL: jdbc:postgresql://10.0.0.149:5432/lifescope
       SPRING_DATASOURCE_USERNAME: lifescope
       SPRING_DATASOURCE_PASSWORD: lifescope
       SPRING_DATA_REDIS_HOST: redis

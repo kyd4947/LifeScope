@@ -120,15 +120,17 @@ Networking → Virtual cloud networks → lifescope-vcn
 → Security Lists → Default Security List → Add Ingress Rules
 ```
 
-추가한 규칙 (Stateless 체크 안 함):
+추가할 규칙 (Stateless 체크 안 함):
 
 | Source CIDR | IP Protocol | Destination Port | 용도 |
 |---|---|---|---|
-| 0.0.0.0/0 | TCP | 22 | SSH (기본 제공) |
-| 0.0.0.0/0 | TCP | 80 | HTTP |
-| 0.0.0.0/0 | TCP | 443 | HTTPS |
-| 0.0.0.0/0 | TCP | 8080 | Spring Boot 직접 접근 (개발용) |
+| 사용자 공인 IP/32 | TCP | 22 | SSH |
+| 0.0.0.0/0 | TCP | 80 | HTTP (nginx 공개 진입점) |
+| 0.0.0.0/0 | TCP | 443 | HTTPS (TLS 설정 후에만 추가) |
+| 10.0.0.154/32 | TCP | 5432 | vm-1 에서 vm-2 PostgreSQL 접속 |
 
+> `8080`은 nginx 뒤에서만 접근하므로 외부에 열지 않는다.
+> `5432`는 vm-1 내부 IP 한 개만 허용한다. `0.0.0.0/0`으로 열면 안 된다.
 > ICMP 규칙 2개(3,4 / 3)는 오라클 기본 규칙 — 삭제하지 말 것.
 
 ---

@@ -42,7 +42,8 @@ if command -v npm >/dev/null 2>&1; then
   [ -d "${APP_DIR}/frontend/dist" ] || fail "프론트엔드 빌드 결과가 없습니다."
   echo "    dist 생성 : $(find "${APP_DIR}/frontend/dist" -type f | wc -l) 개 파일"
 else
-  echo "    npm 이 없어 건너뜁니다. dist/ 가 사전에 업로드되어 있어야 합니다."
+  [ -d "${APP_DIR}/frontend/dist" ] || fail "npm 이 없고 frontend/dist/ 도 없습니다. 프론트엔드 산출물을 먼저 업로드하세요."
+  echo "    npm 이 없어 건너뜁니다. 사전 업로드된 dist/ 를 사용합니다."
 fi
 
 # ---- 백엔드 이미지 빌드 ----
