@@ -63,7 +63,8 @@ jobs:
           --health-retries 5
 
     env:
-      # application.yaml 은 gitignore 대상이라 CI 에는 주입해야 한다
+      # application.yaml 은 저장소에 있으므로, 서비스 컨테이너 주소로 덮어쓴다.
+      # (값은 동일하지만 의도를 명시해 두어 설정 위치를 한 곳으로 고정한다)
       SPRING_DATASOURCE_URL: jdbc:postgresql://localhost:5432/lifescope
       SPRING_DATASOURCE_USERNAME: lifescope
       SPRING_DATASOURCE_PASSWORD: lifescope

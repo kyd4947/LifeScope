@@ -1,1 +1,5 @@
-/application.yaml
+# application.yaml 은 API 키를 ${환경변수:} 형태로만 주입하므로
+# 비밀값이 포함되지 않는다. CI 와 협업자가 설정 구조를 볼 수 있도록 추적한다.
+#
+# 로컬 전용 설정이 필요하면 아래처럼 하위 파일을 분리한다.
+#   application-local.yaml   (이 파일만 ignore)
