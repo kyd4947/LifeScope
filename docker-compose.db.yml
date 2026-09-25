@@ -1,0 +1,57 @@
+# ============================================================
+# LifeScope PostgreSQL (vm-2 : 158.179.181.70)
+#
+# vm-1 의 앱과 다른 서버에 두어 데이터를 격리한다.
+# 앱 컨테이너는 postgres_data 에 직접 접근하지 않고 네트워크로만 통신한다.
+#
+#   docker compose -f docker-compose.db.yml up -d
+# ============================================================
+
+services:
+  postgres:
+    image: postgres:16-alpine
+    container_name: lifescope-postgres
+    restart: unless-stopped
+
+    environment:
+      POSTGRES_DB: lifescope
+      POSTGRES_USER: lifescope
+      POSTGRES_PASSWORD: lifescope
+      POSTGRES_INITDB_ARGS: "--encoding=UTF8 --locale=C"
+
+    # vm-1 에서만 접속할 수 있도록 VCN 내부 주소 대역으로 제한한다.
+    # Oracle Cloud VCN 기본 대역이 10.0.0.0/24 이므로 그 대역만 허용한다.
+    # ⚠ vm-1 의 내부 IP 를 확인한 뒤 이 값을 확정한다.
+    #   ip addr show | grep 'inet 10\.'
+    # 운영 시: 10.0.0.0/24 대신 vm-1 내부 IP 하나로 좁히는 것이 안전하다.
+    # 지금은 개발 편의를 위해 전체를 허용하되 배포 전에 반드시 수정한다.
+    ports:
+      - "0.0.0.0:5432:5432"
+
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+      - ./backup:/backup
+
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U lifescope -d lifescope"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+    # 리소스가 1GB 뿐이라 메모리를 아껴 쓴다
+    command: >
+      postgres
+      -c shared_buffers=128MB
+      -c work_mem=4MB
+      -c maintenance_work_mem=64MB
+      -c max_connections=50
+
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
+
+volumes:
+  pgdata:
+    driver: local

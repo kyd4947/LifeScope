@@ -1,0 +1,98 @@
+# ============================================================
+# LifeScope 운영 배포 (vm-1 : 131.186.60.251)
+#
+# 구성
+#   app    : Spring Boot (8080, 외부 비노출)
+#   redis  : 캐시 (6379, 내부 전용)
+#   nginx  : 유일한 외부 진입점 (80)
+#
+# PostgreSQL 은 vm-2 (158.179.181.70) 에 별도로 구성되어 있다.
+# API 키 는 /opt/life-scope/.env 에 두고 여기서 env_file 로 주입한다.
+# ============================================================
+
+services:
+  app:
+    build:
+      context: ./backend/LifeScope
+      dockerfile: Dockerfile
+      # Oracle Cloud E2.1.Micro 는 x86_64
+      platforms:
+        - linux/amd64
+    image: lifescope-app:latest
+    container_name: lifescope-app
+    restart: unless-stopped
+
+    # vm-2 의 PostgreSQL 로 연결
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:postgresql://158.179.181.70:5432/lifescope
+      SPRING_DATASOURCE_USERNAME: lifescope
+      SPRING_DATASOURCE_PASSWORD: lifescope
+      SPRING_DATA_REDIS_HOST: redis
+      SPRING_DATA_REDIS_PORT: 6379
+      # 운영은 devtools 가 없으므로 Redis 캐시가 활성화된다
+      SPRING_DEVTOOLS_RESTART_ENABLED: "false"
+      TZ: Asia/Seoul
+      JAVA_OPTS: "-Xms192m -Xmx448m -XX:+UseSerialGC"
+
+    # API 키 주입
+    # .env 는 저장소에 커밋하지 않으며 서버 /opt/life-scope/.env 에만 둔다.
+    # 로컬에서 검증하려면 아래 backend 경로를 주석 해제하고 위 .env 를 주석 처리한다.
+    env_file:
+      - .env
+    # env_file:
+    #   - backend/LifeScope/.env
+
+    depends_on:
+      redis:
+        condition: service_healthy
+
+    networks:
+      - lifescope
+
+    # 외부 포트를 열지 않는다 (nginx 만 외부에 노출)
+    expose:
+      - "8080"
+
+  redis:
+    image: redis:7-alpine
+    container_name: lifescope-redis
+    restart: unless-stopped
+    command: redis-server --save 60 1 --maxmemory 128mb --maxmemory-policy allkeys-lru
+    volumes:
+      - redis_data:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 3s
+      retries: 5
+    networks:
+      - lifescope
+    expose:
+      - "6379"
+
+  nginx:
+    image: nginx:1.27-alpine
+    container_name: lifescope-nginx
+    restart: unless-stopped
+    ports:
+      - "80:80"
+    volumes:
+      - ./docker/nginx/lifescope.conf:/etc/nginx/conf.d/default.conf:ro
+      # 프론트엔드 빌드 산출물
+      - ./frontend/dist:/usr/share/nginx/html:ro
+    depends_on:
+      - app
+    networks:
+      - lifescope
+    healthcheck:
+      test: ["CMD", "wget", "-qO-", "http://127.0.0.1/"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+
+volumes:
+  redis_data:
+
+networks:
+  lifescope:
+    driver: bridge

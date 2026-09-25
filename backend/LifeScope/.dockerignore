@@ -1,0 +1,38 @@
+# ============================================================
+# Docker 빌드 컨텍스트 제외 대상
+#   빌드 이미지에 들어갈 필요가 없는 로컬 산출물·설정
+# ============================================================
+
+# Gradle
+.gradle/
+build/
+gradle-app/
+
+# IDE
+.idea/
+*.iml
+*.ipr
+*.iws
+.classpath
+.project
+.settings/
+bin/
+.vscode/
+
+# 환경 변수 (이미지에 절대 포함되면 안 됨)
+.env
+.env.*
+
+# OS
+.DS_Store
+Thumbs.db
+
+# 로그 / 임시
+*.log
+logs/
+*.tmp
+*.temp
+.cache/
+
+# 문서
+HELP.md

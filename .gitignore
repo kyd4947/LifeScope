@@ -55,6 +55,13 @@ application-secrets.yml
 .env.*
 ssh-key-2026-08-25.key
 
+# ===== 배포 산출물 예외 (위 *.yml 규칙에 걸리지 않도록 명시) =====
+# 시크릿이 들어 있지 않아 버전 관리해야 하는 배포 설정
+!docker-compose*.yml
+!**/docker-compose*.yml
+!.github/workflows/*.yml
+!frontend/.github/workflows/*.yml
+
 # ===== 테스트 / 리포트 =====
 *.html
 !**/src/main/resources/templates/**/*.html
