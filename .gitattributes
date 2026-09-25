@@ -1,0 +1,27 @@
+# ============================================================
+# EOL 정규화
+#
+# 문제 : Windows 에서 checkout 시 CRLF, Linux(CI) 에서 LF 로 끝나면서
+#        "변경 없음" 인 파일이 계속 수정됨으로 표시되었다.
+#        (인덱스 LF vs 작업 트리 CRLF 차이)
+#
+# 해결 : 저장소에는 LF 로 저장하고, checkout 시 플랫폼에 맞게 변환한다.
+# ============================================================
+
+# 기본: 저장소는 LF, 체크아웃 시 OS 기본값으로
+* text=auto eol=lf
+
+# ---- 바이너리로 강제 ----
+*.jar binary
+*.jpg binary
+*.jpeg binary
+*.png binary
+*.gif binary
+*.ico binary
+*.pdf binary
+*.zip binary
+*.xlsx binary
+
+# ---- Windows 배치 파일만 CRLF ----
+*.bat text eol=crlf
+*.cmd text eol=crlf
