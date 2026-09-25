@@ -121,24 +121,41 @@ jobs:
   deploy:
     name: 배포
     needs: [backend, frontend]
-    if: github.ref == 'refs/heads/main' && github.event_name != 'pull_request'
+    # main 푸시 + PR 이 아닐 때만 실행한다.
+    # SSH_PRIVATE_KEY 가 등록되지 않은 경우(= secrets 문맥 밖)에는 잡을 건너뛴다.
+    # 수동 트리거(workflow_dispatch)로도 실행할 수 있다.
+    if: >-
+      github.event_name != 'pull_request'
+      && (github.ref == 'refs/heads/main' || github.event_name == 'workflow_dispatch')
     runs-on: ubuntu-latest
     environment: production
+    env:
+      HAS_DEPLOY_KEY: ${{ secrets.SSH_PRIVATE_KEY != '' }}
     steps:
+      - name: 배포 비활성화 안내
+        if: env.HAS_DEPLOY_KEY != 'true'
+        run: |
+          echo "::notice::SSH_PRIVATE_KEY 미설정 - 배포를 건너뜁니다."
+          echo "::notice::등록 방법 : Settings > Secrets and variables > Actions > New repository secret"
+
       - uses: actions/checkout@v4
+        if: env.HAS_DEPLOY_KEY == 'true'
 
       # SSH 키는 GitHub Secrets 에 등록한다 (저장소에는 두지 않는다)
       - name: SSH 키 설정
+        if: env.HAS_DEPLOY_KEY == 'true'
         uses: webfactory/ssh-agent@v0.9.0
         with:
           ssh-private-key: ${{ secrets.SSH_PRIVATE_KEY }}
 
       - name: 호스트 키 등록
+        if: env.HAS_DEPLOY_KEY == 'true'
         run: |
           mkdir -p ~/.ssh
           ssh-keyscan -H ${{ env.DEPLOY_HOST }} >> ~/.ssh/known_hosts
 
       - name: 소스 동기화 (rsync)
+        if: env.HAS_DEPLOY_KEY == 'true'
         run: |
           rsync -az --delete \
             --exclude '.git' \
@@ -147,14 +164,16 @@ jobs:
             --exclude 'build' \
             --exclude 'dist' \
             --exclude '.gradle' \
-            ./ ${{ secrets.DEPLOY_USER }}@${{ env.DEPLOY_HOST }}:${{ env.DEPLOY_PATH }}/
+            ./ ${{ env.DEPLOY_USER }}@${{ env.DEPLOY_HOST }}:${{ env.DEPLOY_PATH }}/
 
       - name: 서버 배포 실행
+        if: env.HAS_DEPLOY_KEY == 'true'
         run: |
-          ssh ${{ secrets.DEPLOY_USER }}@${{ env.DEPLOY_HOST }} \
+          ssh ${{ env.DEPLOY_USER }}@${{ env.DEPLOY_HOST }} \
             "cd ${{ env.DEPLOY_PATH }} && chmod +x scripts/deploy.sh && ./scripts/deploy.sh"
 
       - name: 헬스체크
+        if: env.HAS_DEPLOY_KEY == 'true'
         run: |
           for i in $(seq 1 20); do
             code=$(curl -s -o /dev/null -w '%{http_code}' http://${{ env.DEPLOY_HOST }}/ || true)
