@@ -1,8 +1,11 @@
 import { defineConfig } from 'vite';
 
-// 상대경로 /api 호출을 Spring Boot(8080)로 전달하는 개발용 프록시
-// 운영에서는 nginx가 동일 역할을 수행하므로 프론트 코드 변경 불필요
+// Pages 배포 시 저장소 이름이 URL 경로에 포함된다.
+// 로컬/nginx 배포에서는 루트 경로를 사용한다.
+const basePath = process.env.VITE_BASE_PATH || '/';
+
 export default defineConfig({
+  base: basePath,
   server: {
     port: 5173,
     proxy: {
@@ -18,7 +21,7 @@ export default defineConfig({
   },
   build: {
     outDir: 'dist',
-    // nginx가 SPA 라우팅을 처리하므로 상대 경로로 빌드
+    // 정적 자산은 Pages 경로 또는 nginx 경로에 맞게 생성된다.
     assetsDir: 'assets',
   },
 });

@@ -36,6 +36,9 @@ springdoc:
 server:
   port: 8080
 
+app:
+  frontend-origins: ${FRONTEND_ORIGINS:http://localhost:5173}
+
 management:
   endpoints:
     web:
